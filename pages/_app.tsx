@@ -13,12 +13,14 @@ import routerProvider from "@pankod/refine-nextjs-router";
 import dataProvider, { GraphQLClient } from "@pankod/refine-hasura";
 import { ColorModeContextProvider } from "@contexts";
 import { Title, Sider, Layout, Header } from "@components/layout";
+import { Footer } from "@components/layout/footer";
 
-const API_URL = "https://your-hasura-url/graphql";
+const API_URL =
+  "https://zqjydifrzpoglwwntsno.hasura.eu-central-1.nhost.run/v1/graphql";
 
 const client = new GraphQLClient(API_URL, {
   headers: {
-    "x-hasura-role": "public",
+    "x-hasura-admin-secret": "247c470d4d4f319a053465caf0bd6558",
   },
 });
 
@@ -26,25 +28,35 @@ const gqlDataProvider = dataProvider(client);
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
-    <ColorModeContextProvider>
+    <>
       <CssBaseline />
-      <GlobalStyles styles={{ html: { WebkitFontSmoothing: "auto" } }} />
-      <RefineSnackbarProvider>
-        <Refine
-          routerProvider={routerProvider}
-          dataProvider={gqlDataProvider}
-          notificationProvider={notificationProvider}
-          ReadyPage={ReadyPage}
-          catchAll={<ErrorComponent />}
-          Title={Title}
-          Sider={Sider}
-          Layout={Layout}
-          Header={Header}
-        >
-          <Component {...pageProps} />
-        </Refine>
-      </RefineSnackbarProvider>
-    </ColorModeContextProvider>
+      <GlobalStyles
+        styles={{
+          html: { WebkitFontSmoothing: "auto" },
+        }}
+      />
+      <Refine
+        routerProvider={routerProvider}
+        dataProvider={gqlDataProvider}
+        ReadyPage={ReadyPage}
+        catchAll={<ErrorComponent />}
+        Title={Title}
+        resources={[
+          {
+            name: "homepage",
+            options: {
+              route: "",
+            },
+          },
+        ]}
+        Sider={Sider}
+        Footer={Footer}
+        Layout={Layout}
+        Header={Header}
+      >
+        <Component {...pageProps} />
+      </Refine>
+    </>
   );
 }
 

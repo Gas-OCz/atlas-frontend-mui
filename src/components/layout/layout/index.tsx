@@ -1,43 +1,39 @@
 import React from "react";
 import { LayoutProps } from "@pankod/refine-core";
-import { Box } from "@pankod/refine-mui";
+import { Box, Container } from "@pankod/refine-mui";
 
 import { Sider as DefaultSider } from "../sider";
 import { Header as DefaultHeader } from "../header";
 
 export const Layout: React.FC<LayoutProps> = ({
-  Sider,
-  Header,
   Footer,
   OffLayoutArea,
   children,
 }) => {
-  const SiderToRender = Sider ?? DefaultSider;
-  const HeaderToRender = Header ?? DefaultHeader;
-
   return (
     <Box display="flex" flexDirection="row">
-      <SiderToRender />
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
           flex: 1,
           minHeight: "100vh",
+          backgroundColor: "red",
         }}
       >
-        <HeaderToRender />
         <Box
           component="main"
           sx={{
-            p: { xs: 1, md: 2, lg: 3 },
+            p: { xs: 0, md: 1, lg: 2 },
             flexGrow: 1,
-            bgcolor: (theme) => theme.palette.background.default,
+            backgroundColor: "#FAF3E3",
           }}
         >
-          {children}
+          <Container maxWidth="lg" sx={{ px: { xs: 1, md: 1, lg: 2 } }}>
+            {children}
+            {Footer && <Footer />}
+          </Container>
         </Box>
-        {Footer && <Footer />}
       </Box>
       {OffLayoutArea && <OffLayoutArea />}
     </Box>
