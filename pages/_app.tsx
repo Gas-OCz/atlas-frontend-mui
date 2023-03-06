@@ -11,7 +11,7 @@ import routerProvider from "@pankod/refine-nextjs-router";
 import dataProvider, { GraphQLClient } from "@pankod/refine-hasura";
 import { Title, Sider, Layout, Header } from "@components/layout";
 import { Footer } from "@components/layout/footer";
-import localFont from "@next/font/local";
+import localFont from "next/font/local";
 
 export const nudista = localFont({
   src: [

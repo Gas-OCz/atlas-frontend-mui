@@ -155,7 +155,7 @@ const HomepageRace: FC = () => {
                   overflow: "hidden",
                 }}
               >
-                {dataRight?.prerex}
+                {dataLeft?.prerex}
               </div>
               <div
                 style={{
