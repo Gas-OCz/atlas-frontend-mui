@@ -94,7 +94,6 @@ const MyMenu = (props: PageProps) => {
     },
   };
   const section = props.section ?? "";
-
   return (
     <Box>
       <CssBaseline />
@@ -229,23 +228,25 @@ const MyMenu = (props: PageProps) => {
             </Stack>
           </Box>
         </Box>
-        <Box
-          sx={{
-            position: "absolute",
-            display: { xs: "none", lg: "block" },
-            left: "calc(50% - 100px)",
-            zIndex: 500,
-            width: "200px",
-            fontSize: 24,
-            fontWeight: "bold",
-            border: "1px solid #000",
-            padding: 1.5,
-          }}
-        >
-          <Box sx={{ p: 3, zIndex: 500, backgroundColor: "#ff9f29" }}>
-            Registrace
+        {section === "" && (
+          <Box
+            sx={{
+              position: "absolute",
+              display: { xs: "none", lg: "block" },
+              left: "calc(50% - 100px)",
+              zIndex: 500,
+              width: "200px",
+              fontSize: 24,
+              fontWeight: "bold",
+              border: "1px solid #000",
+              padding: 1.5,
+            }}
+          >
+            <Box sx={{ p: 3, zIndex: 500, backgroundColor: "#ff9f29" }}>
+              Registrace
+            </Box>
           </Box>
-        </Box>
+        )}
       </Box>
     </Box>
   );
