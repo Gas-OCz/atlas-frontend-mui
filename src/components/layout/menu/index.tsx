@@ -22,6 +22,7 @@ import whiteLogo from "public/logo-white.svg";
 import { LayoutProps } from "@pankod/refine-core";
 import { IRaceSet } from "../../../../pages/[race]";
 import { nhost } from "../../../utilites/nhost";
+import { cheddarGothic, nudista } from "../../../../pages/_app";
 
 export interface PageProps extends LayoutProps {
   race: IRaceSet;
@@ -150,6 +151,7 @@ const MyMenu = (props: PageProps) => {
                     fontSize: 24,
                     textTransform: "none",
                     fontWeight: "Bold",
+                    fontFamily: nudista.style,
                     paddingX: 2,
                   }}
                 >
@@ -183,10 +185,10 @@ const MyMenu = (props: PageProps) => {
           <Box sx={{ display: { xs: "none", lg: "block" }, zIndex: 100 }}>
             <Box
               sx={{
-                color: "white",
+                color: "#FAF3E3",
                 fontSize: 40,
                 fontWeight: "bold",
-                fontFamily: "Pathway Gothic One",
+                fontFamily: cheddarGothic.style,
               }}
             >
               {place}
@@ -194,10 +196,10 @@ const MyMenu = (props: PageProps) => {
             <Stack direction={"row"}>
               <DateField
                 sx={{
-                  fontFamily: "Pathway Gothic One",
                   color: "#FAF3E3",
                   fontSize: 96,
                   fontWeight: "bold",
+                  fontFamily: cheddarGothic.style,
                 }}
                 value={startDate}
                 format={"DD. -"}
@@ -206,10 +208,10 @@ const MyMenu = (props: PageProps) => {
               <DateField
                 sx={{
                   paddingLeft: 1.5,
-                  fontFamily: "Pathway Gothic One",
                   color: "#FAF3E3",
                   fontSize: 96,
                   fontWeight: "bold",
+                  fontFamily: cheddarGothic.style,
                 }}
                 value={endDate}
                 format={" DD. MM. YYYY"}
@@ -240,6 +242,7 @@ const MyMenu = (props: PageProps) => {
               fontWeight: "bold",
               border: "1px solid #000",
               padding: 1.5,
+              textAlign: "center",
             }}
           >
             <Box sx={{ p: 3, zIndex: 500, backgroundColor: "#ff9f29" }}>

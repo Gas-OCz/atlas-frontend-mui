@@ -3,6 +3,7 @@ import { LayoutProps } from "@pankod/refine-core";
 import { Box, Container } from "@pankod/refine-mui";
 import MyMenu, { EMenu } from "@components/layout/menu";
 import { IRaceSet } from "../../../../pages/[race]";
+import { nudista } from "../../../../pages/_app";
 export interface ContentLayout extends LayoutProps {
   race: IRaceSet;
   section: string | undefined;
@@ -17,6 +18,7 @@ export const ContentLayout: React.FC<ContentLayout> = (props) => {
         <Box
           sx={{
             display: "flex",
+            fontFamily: nudista.style,
             flexDirection: "column",
             flex: 1,
             minHeight: "100vh",

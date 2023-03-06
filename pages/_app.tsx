@@ -11,7 +11,66 @@ import routerProvider from "@pankod/refine-nextjs-router";
 import dataProvider, { GraphQLClient } from "@pankod/refine-hasura";
 import { Title, Sider, Layout, Header } from "@components/layout";
 import { Footer } from "@components/layout/footer";
+import localFont from "@next/font/local";
 
+export const nudista = localFont({
+  src: [
+    {
+      path: "../public/fonts/nudista/Nudista_Medium.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/nudista/Nudista_Thin.otf",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/nudista/Nudista_Medium.otf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/nudista/Nudista_Semibold.otf",
+      weight: "bold",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/nudista/Nudista_Bold.otf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+});
+export const cheddarGothic = localFont({
+  src: [
+    {
+      path: "../public/fonts/gothic/CheddarGothic00001.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/gothic/CheddarGothic00001.otf",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/gothic/CheddarGothic00001.otf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/gothic/CheddarGothic00001.otf",
+      weight: "bold",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/gothic/CheddarGothic00001.otf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+});
 const API_URL =
   "https://zqjydifrzpoglwwntsno.hasura.eu-central-1.nhost.run/v1/graphql";
 
@@ -22,17 +81,10 @@ export const client = new GraphQLClient(API_URL, {
 });
 
 const gqlDataProvider = dataProvider(client);
-import Head from "next/head";
+
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <>
-      <Head>
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
       <CssBaseline />
       <GlobalStyles
         styles={{
@@ -61,7 +113,9 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
         Layout={Layout}
         Header={Header}
       >
-        <Component {...pageProps} />
+        <main className={`${nudista.className} `}>
+          <Component {...pageProps} />
+        </main>
       </Refine>
     </>
   );
