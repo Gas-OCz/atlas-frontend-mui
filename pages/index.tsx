@@ -7,29 +7,26 @@ import {
   debounce,
   ImageList,
   ImageListItem,
-  ImageListItemBar,
-  minWidth,
   Stack,
 } from "@pankod/refine-mui";
-import { Divider, Grid as MuiGrid } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { Layout } from "@components/layout";
 import { Footer } from "@components/layout/footer";
 import Image from "next/image";
 import logo from "public/logo.png";
 import { useWindowSize } from "@components/hooks/windowsResize";
 import { useRouter } from "next/dist/client/router";
-interface IHomePage {
+export interface IHomePage {
   loading: boolean;
   id_file: string;
   title: string;
   prerex: string;
   homepage_position: "LEFT" | "RIGHT";
   id_file_title: string;
+  id_race: string;
   route: string;
 }
 
-const Homepage: FC = () => {
+const HomepageRace: FC = () => {
   const { data, isLoading } = useList<IHomePage, HttpError>({
     resource: "homepage",
     metaData: {
@@ -74,7 +71,7 @@ const Homepage: FC = () => {
         setLogoWidth(Math.round(photoWidth / 4.9));
       }
       setLoading(false);
-    }, 500),
+    }, 200),
     []
   );
   useEffect(() => {
@@ -146,14 +143,14 @@ const Homepage: FC = () => {
                 style={{
                   position: "absolute",
                   width: "50%",
-                  left: `calc(50% - ${cols === 1 ? 2 : 1}px)`,
+                  left: `calc(50% - ${cols === 2 ? 0 : 1}px)`,
                   background: "#1A4D2E",
                   top: "20%",
                   color: "white",
                   fontSize: "14px",
                   padding: 10,
                   textOverflow: "ellipsis",
-                  maxHeight: "20%",
+                  maxHeight: "28%",
                   display: "-webkit-box",
                   overflow: "hidden",
                 }}
@@ -206,7 +203,7 @@ const Homepage: FC = () => {
                   fontSize: "14px",
                   color: "white",
                   textOverflow: "ellipsis",
-                  maxHeight: "20%",
+                  maxHeight: "28%",
                   display: "-webkit-box",
                   overflow: "hidden",
                 }}
@@ -236,17 +233,5 @@ const Homepage: FC = () => {
     </Layout>
   );
 };
-interface LineProps {
-  position?: "horizontal" | "vertical";
-}
-const Line: FC<LineProps> = ({ position = "horizontal" }) => (
-  <div
-    style={{
-      border: "1px solid #000",
-      display: "flex",
-      height: "fit-content",
-      width: "1px",
-    }}
-  />
-);
-export default Homepage;
+
+export default HomepageRace;
