@@ -14,7 +14,7 @@ import {
   Stack,
 } from "@pankod/refine-mui";
 import React from "react";
-import MenuIcon from "@mui/icons-material/menu";
+import { Menu as MenuIcon } from "@mui/icons-material";
 
 import Link from "next/link";
 import Image from "next/image";
