@@ -63,7 +63,7 @@ const Homepage: FC<PageProps> = (props) => {
         <Grid
           container
           rowSpacing={1}
-          columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+          columnSpacing={{ xs: 0, sm: 2, md: 3 }}
           sx={{ paddingTop: 6 }}
         >
           <Grid xs={12} lg={6}>
