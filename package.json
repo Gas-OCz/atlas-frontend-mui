@@ -21,6 +21,7 @@
     "@pankod/refine-react-hook-form": "^3.27.1",
     "graphql": "^15.6.1",
     "graphql-request": "^3.5.0",
+    "lodash": "^4.17.21",
     "next": "^13.2.3",
     "next-compose-plugins": "^2.2.1",
     "nookies": "^2.5.2",
@@ -30,6 +31,7 @@
     "yet-another-react-lightbox": "^2.5.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.191",
     "@types/node": "^14.14.13",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",

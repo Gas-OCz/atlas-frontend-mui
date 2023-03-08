@@ -97,7 +97,7 @@ const theme = createTheme({
       main: "#1A4D2E",
     },
     secondary: {
-      main: "#1A4D2E",
+      main: "#ff9f29",
     },
   },
   components: {

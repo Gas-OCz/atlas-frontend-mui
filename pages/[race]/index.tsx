@@ -17,12 +17,12 @@ interface PageProps extends LayoutProps {
 
 export interface IRaceSet {
   id_race: string;
+  place: string;
   route: string;
   title: string;
   prerex: string;
   startDate: string;
   endDate: string;
-  place: string;
   homepageId: string;
   id_file: string;
 }
@@ -51,8 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         "id_file_title",
         "route",
         "id_race",
-        "place",
-        { race: ["start_date", "end_date"] },
+        { race: ["start_date", "end_date", "place"] },
       ],
     },
   });
@@ -69,7 +68,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         prerex: race?.prerex ?? "",
         startDate: race?.race?.start_date ?? "",
         endDate: race?.race?.end_date ?? "",
-        place: race?.place ?? "",
+        place: race?.race?.place ?? "",
         id_homepage: race?.id ?? null,
         id_file: race?.id_file ?? null,
       },

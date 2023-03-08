@@ -27,3 +27,8 @@ export const resourceShirts = "race_shirts";
 export const fieldsShirts = {
   fields: ["id", "title", "price", "available"],
 };
+
+export const resourceUpsells = "race_upsells";
+export const fieldsUpsells = {
+  fields: ["id", "title", "type", "price", "available", "multiple"],
+};

@@ -11,6 +11,19 @@ export interface IRaceShirt {
   price: number;
   available: boolean;
 }
+export enum EUpsellType {
+  standard = "standard",
+  shirt = "shirt",
+}
+
+export interface IRaceUpsell {
+  id: string;
+  type: EUpsellType;
+  title: string;
+  price: number;
+  available: boolean;
+  multiple: boolean;
+}
 
 export interface IRegistrationDto {
   club_name: string;
@@ -25,31 +38,36 @@ export interface IRegistrationDto {
 
   //Závodníci
   registration_competitors: {
-    //id_registration:string; // klíč přes který se propojí s registraci
-    first_name: string;
-    last_name?: string;
-    phone_number: string;
-    email: string;
-    personal_id: string; //RČ - počítá se s formatem 6 nebo 10 znaků, vypočítává se z toho datum narození
-    id_race_shirt: string; //Odkaz na vybrané triko z "race_shirts"
-  }[];
-
+    data: RegistrationCompetitors[];
+  };
   //Doprovod
-  registration_accompaniments: {
-    //id_registration:string; // klíč přes který se propojí s registraci
-    first_name: string;
-    last_name: string;
-    phone: string;
-  }[];
+  registration_accompaniments: { data: RegistrationAccompaniments[] };
 
   //Doplňkový prodej
-  registration_upsells: {
-    //id_registration:string; // klíč přes který se propojí s registraci
-    id_race_upsell: string; // propojí se na "race_upsells" podle kterého se určí o co jde
-    amount: string;
-    price: string; //Jednotková cena s DPH.
-  }[];
+  registration_upsells: { data: IRegistrationUpsells[] };
 }
+interface RegistrationCompetitors {
+  id: string;
+  first_name: string;
+  last_name?: string;
+  phone_number: string;
+  email: string;
+  personal_id: string; //RČ - počítá se s formatem 6 nebo 10 znaků, vypočítává se z toho datum narození
+  id_race_shirt: string; //Odkaz na vybrané triko z "race_shirts"
+}
+interface RegistrationAccompaniments {
+  id: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+}
+interface IRegistrationUpsells {
+  id: string;
+  id_race_upsell: string; // propojí se na "race_upsells" podle kterého se určí o co jde
+  amount: string;
+  price: string; //Jednotková cena s DPH.
+}
+
 export interface IRaceCategory {
   id: string;
   id_race: string;
