@@ -31,7 +31,6 @@
     "yet-another-react-lightbox": "^2.5.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.191",
     "@types/node": "^14.14.13",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
