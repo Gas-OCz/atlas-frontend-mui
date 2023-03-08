@@ -89,22 +89,16 @@ const HomepageRace: FC = () => {
   if (loading || isLoading) return <div>Loading ...</div>;
   return (
     <Layout Footer={Footer}>
-      <Box
-        ref={refRow}
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
+      <Box ref={refRow}>
         <ImageList
           sx={{
             p: 0,
             width: "100%",
             height: "100%",
             transform: "translateZ(0)",
+            mb: 0.3,
           }}
-          gap={1}
+          gap={3}
         >
           <Box
             sx={{

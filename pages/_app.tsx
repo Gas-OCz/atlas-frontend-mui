@@ -6,13 +6,14 @@ import {
   GlobalStyles,
   ReadyPage,
   ErrorComponent,
+  ThemeProvider,
 } from "@pankod/refine-mui";
 import routerProvider from "@pankod/refine-nextjs-router";
 import dataProvider, { GraphQLClient } from "@pankod/refine-hasura";
 import { Title, Sider, Layout, Header } from "@components/layout";
 import { Footer } from "@components/layout/footer";
 import localFont from "next/font/local";
-
+import { createTheme } from "@mui/material";
 export const nudista = localFont({
   src: [
     {
@@ -81,42 +82,84 @@ export const client = new GraphQLClient(API_URL, {
 });
 
 const gqlDataProvider = dataProvider(client);
+console.log(nudista.style.fontFamily.toString());
+const theme = createTheme({
+  typography: {
+    fontFamily: nudista.style.fontFamily,
 
+    h5: {
+      fontWeight: "bold",
+    },
+  },
+
+  palette: {
+    primary: {
+      main: "#1A4D2E",
+    },
+    secondary: {
+      main: "#1A4D2E",
+    },
+  },
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          "& .MuiBreadcrumbs-root": {
+            padding: 0,
+            paddingTop: 0,
+            paddingBottom: 0,
+          },
+        },
+      },
+    },
+    MuiBreadcrumbs: {
+      styleOverrides: {
+        root: {
+          padding: 0,
+          paddingTop: 0,
+          paddingBottom: 0,
+        },
+      },
+    },
+  },
+});
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <>
-      <CssBaseline />
-      <GlobalStyles
-        styles={{
-          html: { WebkitFontSmoothing: "auto" },
-        }}
-      />
-      <Refine
-        routerProvider={routerProvider}
-        dataProvider={gqlDataProvider}
-        ReadyPage={ReadyPage}
-        catchAll={<ErrorComponent />}
-        Title={Title}
-        resources={[
-          {
-            name: "homepage",
-            options: {
-              route: "",
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <GlobalStyles
+          styles={{
+            html: { WebkitFontSmoothing: "auto" },
+          }}
+        />
+        <Refine
+          routerProvider={routerProvider}
+          dataProvider={gqlDataProvider}
+          ReadyPage={ReadyPage}
+          catchAll={<ErrorComponent />}
+          Title={Title}
+          resources={[
+            {
+              name: "homepage",
+              options: {
+                route: "",
+              },
             },
-          },
-          {
-            name: "texts",
-          },
-        ]}
-        Sider={Sider}
-        Footer={Footer}
-        Layout={Layout}
-        Header={Header}
-      >
-        <main className={`${nudista.className} `}>
-          <Component {...pageProps} />
-        </main>
-      </Refine>
+            {
+              name: "texts",
+            },
+          ]}
+          Sider={Sider}
+          Footer={Footer}
+          Layout={Layout}
+          Header={Header}
+        >
+          <main className={`${nudista.className} `}>
+            <Component {...pageProps} />
+          </main>
+        </Refine>
+      </ThemeProvider>
     </>
   );
 }

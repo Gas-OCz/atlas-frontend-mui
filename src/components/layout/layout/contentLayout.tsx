@@ -33,13 +33,13 @@ export const ContentLayout: React.FC<ContentLayout> = (props) => {
               backgroundColor: "#FAF3E3",
             }}
           >
-            <Container maxWidth="lg" sx={{ px: { xs: 1, md: 1, lg: 2 } }}>
+            <Container maxWidth="lg" sx={{ px: { xs: 0, md: 1, lg: 2 } }}>
               <MyMenu {...props} />
               {children}
             </Container>
           </Box>
-          <Container maxWidth="lg">
-            <Box maxWidth="lg" sx={{ paddingX: 0 }}>
+          <Container maxWidth="lg" sx={{ px: { xs: 0, md: 1, lg: 2 } }}>
+            <Box maxWidth="lg" sx={{ paddingX: 0, backgroundColor: "#1A4D2E" }}>
               {Footer && <Footer />}
             </Box>
           </Container>

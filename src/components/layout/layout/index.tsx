@@ -1,10 +1,6 @@
 import React from "react";
 import { LayoutProps } from "@pankod/refine-core";
 import { Box, Container } from "@pankod/refine-mui";
-
-import { Sider as DefaultSider } from "../sider";
-import { Header as DefaultHeader } from "../header";
-
 export const Layout: React.FC<LayoutProps> = ({
   Footer,
   OffLayoutArea,
@@ -29,9 +25,14 @@ export const Layout: React.FC<LayoutProps> = ({
             backgroundColor: "#FAF3E3",
           }}
         >
-          <Container maxWidth="lg" sx={{ px: { xs: 1, md: 1, lg: 2 } }}>
+          <Container maxWidth="lg" sx={{ px: { xs: 0, md: 0, lg: 0 } }}>
             {children}
-            {Footer && <Footer />}
+            <Box
+              maxWidth="lg"
+              sx={{ paddingX: 0, paddingY: 0, backgroundColor: "#1A4D2E" }}
+            >
+              {Footer && <Footer />}
+            </Box>
           </Container>
         </Box>
       </Box>

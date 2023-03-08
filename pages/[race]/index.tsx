@@ -7,6 +7,8 @@ import { client } from "../_app";
 import { EMenu } from "@components/layout/menu";
 import Homepage from "@components/sections/homepage/homepage";
 import { Footer } from "@components/layout/footer";
+import homepage from "@components/sections/homepage/homepage";
+import HomepageRace from "../index";
 interface PageProps extends LayoutProps {
   race: IRaceSet;
   section: string;
@@ -14,6 +16,7 @@ interface PageProps extends LayoutProps {
 }
 
 export interface IRaceSet {
+  id_race: string;
   route: string;
   title: string;
   prerex: string;
@@ -23,12 +26,17 @@ export interface IRaceSet {
   homepageId: string;
   id_file: string;
 }
+//TODO create section 404
 const RaceHomePage: FC<PageProps> = (props) => {
-  return (
-    <ContentLayout Footer={Footer} {...props}>
-      <Homepage {...props} />
-    </ContentLayout>
-  );
+  if (props?.race?.route === "homepage") {
+    return <HomepageRace />;
+  } else {
+    return (
+      <ContentLayout Footer={Footer} {...props}>
+        <Homepage {...props} />
+      </ContentLayout>
+    );
+  }
 };
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const data = await dataProvider(client).getList({
@@ -48,23 +56,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       ],
     },
   });
-  const race = data?.data.find(
+  const race = data?.data?.find(
     (item) => item.route === String(context.query.race)
   );
+
   return {
     props: {
       race: {
-        homepageId: race?.id,
-        route: race?.route ?? "",
+        homepageId: race?.id ?? null,
+        route: race?.route ?? "homepage",
         title: race?.title ?? "",
         prerex: race?.prerex ?? "",
         startDate: race?.race?.start_date ?? "",
         endDate: race?.race?.end_date ?? "",
         place: race?.place ?? "",
-        id_homepage: race?.id ?? undefined,
-        id_file: race?.id_file,
+        id_homepage: race?.id ?? null,
+        id_file: race?.id_file ?? null,
       },
       pageType: EMenu.homepage,
+      section: context.query.section ?? "homepage",
     },
   };
 };

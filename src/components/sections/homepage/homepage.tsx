@@ -24,9 +24,8 @@ interface ITexts {
   created_at: string;
 }
 const Homepage: FC<PageProps> = (props) => {
-  const { section, race } = props;
+  const { race } = props;
   const { homepageId } = race;
-  console.log(section);
   const { data, isLoading } = useList<ITexts, HttpError>({
     resource: resource,
     metaData: fields,
@@ -46,7 +45,6 @@ const Homepage: FC<PageProps> = (props) => {
     },
   });
   if (isLoading) return <Box>Loading ...</Box>;
-  console.log(data);
   return (
     <Box>
       <Box sx={{ paddingTop: 5 }}>
@@ -70,10 +68,10 @@ const Homepage: FC<PageProps> = (props) => {
         >
           <Grid xs={12} lg={6}>
             {data?.data.map((item) => (
-              <>
+              <div key={`news${item.id}`}>
                 <Card
                   sx={{
-                    marginBottom: 3,
+                    marginY: 1,
                     display: "flex",
                     backgroundColor: "transparent",
                     boxShadow: "none",
@@ -87,7 +85,7 @@ const Homepage: FC<PageProps> = (props) => {
                         fileId: item.id_file,
                         width: 250,
                       })}
-                      alt="Live from space album cover"
+                      alt=""
                     />
                   )}
                   <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -105,17 +103,27 @@ const Homepage: FC<PageProps> = (props) => {
                     </CardContent>
                   </Box>
                 </Card>
-                <Divider textAlign="right" flexItem color={"black"}>
+                <Divider
+                  sx={{
+                    borderWidth: "2px",
+                    "&::before, &::after": {
+                      borderColor: "primary",
+                    },
+                  }}
+                  textAlign="right"
+                  flexItem
+                  color={"black"}
+                >
                   <DateField value={item?.created_at} />
                 </Divider>
-              </>
+              </div>
             ))}
           </Grid>
           <Grid xs={6}>
             <Box
               sx={{
                 position: "absolute",
-                top: 115,
+                top: 112,
                 zIndex: 1,
                 display: { xs: "none", lg: "block" },
               }}
@@ -123,7 +131,7 @@ const Homepage: FC<PageProps> = (props) => {
               <img
                 src={nhost.storage.getPublicUrl({
                   fileId: race.id_file,
-                  width: 500,
+                  width: 550,
                 })}
                 alt={""}
               />

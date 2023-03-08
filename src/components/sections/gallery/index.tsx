@@ -95,7 +95,7 @@ const CustomGallery: FC<PageProps> = (props) => {
       />
       {data?.data.map((item, index) => (
         <Fragment key={item.title}>
-          <Box sx={{ paddingTop: 5 }}>
+          <Box sx={{ paddingTop: { xs: 5, lg: 5 } }}>
             <Box
               sx={{
                 backgroundColor: "#ff9f29",

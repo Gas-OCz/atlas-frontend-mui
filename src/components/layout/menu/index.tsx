@@ -62,8 +62,8 @@ const MyMenu = (props: PageProps) => {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <List>
-        {navItems.map((item, index) => (
-          <ListItem key={index} disablePadding>
+        {navItems.map((item) => (
+          <ListItem key={item.route} disablePadding>
             <ListItemButton sx={{ textAlign: "center" }}>
               <Link
                 style={{
@@ -94,7 +94,9 @@ const MyMenu = (props: PageProps) => {
       minHeight: 5,
     },
   };
-  const section = props.section ?? "";
+  const section = props.section;
+  console.log(section);
+
   return (
     <Box>
       <CssBaseline />
@@ -134,20 +136,61 @@ const MyMenu = (props: PageProps) => {
             <MenuIcon sx={{ color: "black" }} />
           </IconButton>
 
-          <Box sx={{ display: { xs: "none", lg: "block" } }}>
-            {navItems.map((item, index) => (
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                lg: "block",
+              },
+            }}
+          >
+            <Box sx={{ display: "flex" }}>
+              {navItems.map((item, index) => (
+                <Link
+                  key={`menu${item.route}`}
+                  style={{
+                    textDecoration: "none",
+                    color: "black",
+                  }}
+                  href={`/${props.race.route}/${item.route}`}
+                >
+                  <Button
+                    key={index}
+                    sx={{
+                      padding: 0,
+                      color: "#000",
+                      fontSize: 24,
+                      textTransform: "none",
+                      fontWeight: "Bold",
+                      fontFamily: nudista.style,
+                      paddingX: 2,
+                    }}
+                  >
+                    <Box
+                      sx={
+                        item.route === section ||
+                        (section === "homepage" && item.route === "")
+                          ? activeMenuSx
+                          : undefined
+                      }
+                    >
+                      {item.title}
+                    </Box>
+                  </Button>
+                </Link>
+              ))}
+
               <Link
                 style={{
                   textDecoration: "none",
-                  color: "black",
+                  color: "#ff9f29",
                 }}
-                href={`/${props.race.route}/${item.route}`}
+                href={`/`}
               >
                 <Button
-                  key={index}
                   sx={{
                     padding: 0,
-                    color: "#000",
+                    color: "#ff9f29",
                     fontSize: 24,
                     textTransform: "none",
                     fontWeight: "Bold",
@@ -155,12 +198,20 @@ const MyMenu = (props: PageProps) => {
                     paddingX: 2,
                   }}
                 >
-                  <Box sx={item.route === section ? activeMenuSx : undefined}>
-                    {item.title}
+                  <Box
+                    sx={{
+                      paddingX: 3,
+
+                      paddingY: 0.2,
+                      backgroundImage:
+                        "linear-gradient(transparent 0%, #1A4D2E 0%)",
+                    }}
+                  >
+                    Vybrat závod
                   </Box>
                 </Button>
               </Link>
-            ))}
+            </Box>
           </Box>
         </Toolbar>
       </AppBar>
@@ -182,12 +233,19 @@ const MyMenu = (props: PageProps) => {
             <Image src={whiteLogo} alt={whiteLogo} />
           </Box>
 
-          <Box sx={{ display: { xs: "none", lg: "block" }, zIndex: 100 }}>
+          <Box
+            sx={{
+              display: { xs: "none", lg: "block" },
+              zIndex: 100,
+              minHeight: "220px",
+            }}
+          >
             <Box
               sx={{
                 color: "#FAF3E3",
-                fontSize: 40,
+                fontSize: 36,
                 fontWeight: "bold",
+
                 fontFamily: cheddarGothic.style,
               }}
             >
@@ -199,6 +257,7 @@ const MyMenu = (props: PageProps) => {
                   color: "#FAF3E3",
                   fontSize: 96,
                   fontWeight: "bold",
+
                   fontFamily: cheddarGothic.style,
                 }}
                 value={startDate}
@@ -216,7 +275,7 @@ const MyMenu = (props: PageProps) => {
                 value={endDate}
                 format={" DD. MM. YYYY"}
               />
-              <Box sx={{ paddingLeft: 6, marginTop: 5 }}>
+              <Box sx={{ paddingLeft: 3, paddingRight: 3, marginTop: 4.5 }}>
                 <img
                   src={nhost.storage.getPublicUrl({
                     fileId: "472e1437-ad8c-46a8-a979-5bf3f29bc15e",
@@ -230,27 +289,55 @@ const MyMenu = (props: PageProps) => {
             </Stack>
           </Box>
         </Box>
-        {section === "" && (
-          <Box
-            sx={{
-              position: "absolute",
-              display: { xs: "none", lg: "block" },
-              left: "calc(50% - 100px)",
-              zIndex: 500,
-              width: "200px",
-              fontSize: 24,
-              fontWeight: "bold",
-              border: "1px solid #000",
-              padding: 1.5,
-              textAlign: "center",
-            }}
-          >
-            <Box sx={{ p: 3, zIndex: 500, backgroundColor: "#ff9f29" }}>
-              Registrace
-            </Box>
-          </Box>
-        )}
       </Box>
+      {section !== "registrace" && (
+        <Box
+          sx={{
+            marginTop: { xs: 0, lg: -8 },
+
+            position: { xs: "relative", lg: "absolute" },
+            //display: { xs: "none", lg: "block" },
+            left: { lg: "calc(50% - 130px)" },
+            zIndex: 500,
+            width: { xs: "100%", lg: "260px" },
+            // border: "1px solid #000",
+            padding: { xs: 0, lg: 1.5 },
+            textAlign: "center",
+          }}
+        >
+          {/*marginTop: -4,*/}
+          {/*position: "absolute",*/}
+          {/*left: "calc(50% - 130px)",*/}
+          {/*zIndex: 500,*/}
+          {/*width: "260px",*/}
+          {/*fontSize: 24,*/}
+          {/*fontWeight: "bold",*/}
+          {/*// border: "1px solid #000",*/}
+          {/*padding: 1.5,*/}
+          {/*textAlign: "center",*/}
+          <Box sx={{ zIndex: 500, backgroundColor: "#ff9f29" }}>
+            <Link
+              style={{ textDecoration: "none" }}
+              href={`/${race.route}/registrace`}
+            >
+              <Button
+                sx={{
+                  width: "100%",
+                  p: { xs: 0.5, lg: 3 },
+                  color: "black",
+                  fontSize: { xs: 25, lg: 40 },
+                  backgroundColor: "#ff9f29",
+                  fontWeight: 700,
+                  fontStyle: "normal",
+                  fontFamily: cheddarGothic.style,
+                }}
+              >
+                Registrace
+              </Button>
+            </Link>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 };
