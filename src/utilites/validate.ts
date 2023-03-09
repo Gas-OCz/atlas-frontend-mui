@@ -1,3 +1,8 @@
+import {
+  ECategorySex,
+  IRaceCategoryRule,
+} from "@components/sections/registration/interfaces";
+
 function isValidDate(year: number, month: number, day: number): boolean {
   const date = new Date(year, month - 1, day);
   return (
@@ -6,14 +11,81 @@ function isValidDate(year: number, month: number, day: number): boolean {
     date.getDate() === day
   );
 }
+export interface IGetAgeAndSex {
+  age: number;
+  ageConfirm?: boolean;
+  sex: ECategorySex;
+}
+export const checkRulesSex = (
+  zavodnici: IGetAgeAndSex[],
+  rules: IRaceCategoryRule[]
+): boolean[] => {
+  const check: boolean[] = new Array(zavodnici.length).fill(false);
+  const newRules = [...rules];
+  for (let i = 0; i < zavodnici.length; i++) {
+    for (let j = 0; j < newRules.length; j++) {
+      if (
+        (rules[j].sex === ECategorySex.mix ||
+          zavodnici[i].sex === rules[j].sex) &&
+        !check[i]
+      ) {
+        check[i] = true;
+        newRules.splice(j, 1);
+        break;
+      }
+    }
+  }
+  return check;
+};
+export const checkRulesAge = (
+  zavodnici: IGetAgeAndSex[],
+  rules: IRaceCategoryRule[]
+): boolean[] => {
+  const check: boolean[] = new Array(zavodnici.length).fill(false);
+  const newRules = [...rules];
+  for (let i = 0; i < zavodnici.length; i++) {
+    for (let j = 0; j < newRules.length; j++) {
+      if (
+        zavodnici[i].age >= newRules[j].age_from &&
+        zavodnici[i].age <= newRules[j].age_to &&
+        !check[i]
+      ) {
+        check[i] = true;
+        newRules.splice(j, 1);
+        break;
+      }
+    }
+  }
+  return check;
+};
 
+export const getAgeAndSex = (rc: string): IGetAgeAndSex => {
+  const day = rc.substring(4, 6);
+  const month = rc.substring(2, 4);
+  const year = rc.substring(0, 2);
+
+  const birthYear =
+    parseInt(year, 10) < 54
+      ? 2000 + parseInt(year, 10)
+      : 1900 + parseInt(year, 10);
+
+  const birthMonth = parseInt(month, 10) % 50;
+  const birthDay = parseInt(day, 10);
+  const today = new Date();
+  const birthDate = new Date(birthYear, birthMonth, birthDay);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  let sex = ECategorySex.male;
+  if (parseInt(month, 10) > 50) sex = ECategorySex.female;
+  return { age: age, sex: sex };
+};
 export const validRC = (rc: string): boolean | string => {
-  const message = "Rodné číslo není platné";
-  // odebrání lomítka z řetězce, pokud existuje
   rc = rc.replace("/", "");
-  // ověření délky řetězce
   if (rc.length !== 10 && rc.length !== 6) {
-    return message;
+    return false;
   }
 
   if (rc.length === 6) {
@@ -24,7 +96,6 @@ export const validRC = (rc: string): boolean | string => {
   const year = rc.substring(0, 2);
   const control = rc.substring(9, 10);
 
-  // Ověření platnosti data narození
   const birthYear =
     parseInt(year, 10) < 54
       ? 2000 + parseInt(year, 10)
@@ -34,7 +105,7 @@ export const validRC = (rc: string): boolean | string => {
   const birthDay = parseInt(day, 10);
 
   if (!isValidDate(birthYear, birthMonth, birthDay)) {
-    return message;
+    return false;
   }
   const sude = rc
     .substring(0, 9)
@@ -47,6 +118,5 @@ export const validRC = (rc: string): boolean | string => {
     .split("")
     .filter((num) => parseInt(num) % 2 !== 0)
     .reduce((acc, val) => acc + parseInt(val), 0);
-  if (liche - sude - 11 === parseInt(control)) return true;
-  return message;
+  return liche - sude - 11 === parseInt(control);
 };

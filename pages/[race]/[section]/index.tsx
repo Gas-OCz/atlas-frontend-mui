@@ -8,9 +8,11 @@ import { EMenu, menuItems } from "@components/layout/menu";
 import TextComponent from "@components/sections/texts";
 import { Footer } from "@components/layout/footer";
 import CustomGallery from "@components/sections/gallery";
-import { Box } from "@pankod/refine-mui";
-import { Registration } from "@components/sections/registration";
+import { Box, Stack, Typography } from "@pankod/refine-mui";
+import { RegistrationLeft } from "@components/sections/registration/left";
 import { Success } from "@components/sections/registration/success";
+import { RegistrationRight } from "@components/sections/registration/right";
+import { ErrorOutline } from "@mui/icons-material";
 
 export interface PageProps {
   race: IRaceSet;
@@ -26,10 +28,15 @@ const Section: FC<PageProps> = (props) => {
 
   switch (pageType) {
     case EMenu.registration: {
-      console.log(props?.homepagePosition);
+      console.log("props?.homepagePosition", props?.homepagePosition);
       return (
         <ContentLayout {...props} Footer={Footer}>
-          <Registration {...props} />
+          {props?.homepagePosition === "LEFT" && (
+            <RegistrationLeft {...props} />
+          )}
+          {props?.homepagePosition === "RIGHT" && (
+            <RegistrationRight {...props} />
+          )}
         </ContentLayout>
       );
     }
@@ -53,12 +60,24 @@ const Section: FC<PageProps> = (props) => {
       if (section === "registrace-dokoncena")
         return (
           <ContentLayout {...props} Footer={Footer}>
-            <Success />
+            <Success {...props} />
           </ContentLayout>
         );
       return (
         // <ContentLayout {...props} Footer={Footer}>
-        <Box>404</Box>
+        <ContentLayout {...props} Footer={Footer}>
+          <Box sx={{ paddingTop: 10 }}>
+            <Stack direction={"row"} alignItems={"center"}>
+              <ErrorOutline sx={{ fontSize: 40, color: "red" }} />
+              <Typography
+                variant={"h3"}
+                sx={{ paddingLeft: 2, paddingTop: 0.3 }}
+              >
+                Něco se pokazilo, pokračujte na jinou sekci.
+              </Typography>
+            </Stack>
+          </Box>
+        </ContentLayout>
         // </ContentLayout>
       );
     }

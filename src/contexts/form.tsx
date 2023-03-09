@@ -6,6 +6,7 @@ interface FormState {
   successId: string | null;
   data: IRegistrationDto | undefined;
   step: string | null;
+  price: string | null;
 }
 
 interface FormAction {
@@ -29,6 +30,8 @@ export const FormContext = createContext<FormContextType | undefined>(
 
 const reducer = (state: FormState, action: FormAction) => {
   switch (action.type) {
+    case "setPrice":
+      return { ...state, price: action.payload };
     case "setStep":
       return { ...state, step: action.payload };
     case "setSuccessId":
@@ -44,6 +47,7 @@ const initialState: FormState = {
   successId: "",
   data: undefined,
   step: "",
+  price: null,
 };
 export const FormProvider: FC<FormProps> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);

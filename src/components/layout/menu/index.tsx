@@ -62,6 +62,41 @@ const MyMenu = (props: PageProps) => {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <List>
+        <ListItem disablePadding>
+          <ListItemButton
+            sx={{
+              textAlign: "center",
+            }}
+          >
+            <Link
+              style={{
+                textDecoration: "none",
+                color: "black",
+              }}
+              href={`/`}
+            >
+              <ListItemText primary={"Vybrat závod"} />
+            </Link>
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            sx={{
+              textAlign: "center",
+            }}
+          >
+            <Link
+              style={{
+                textDecoration: "none",
+                fontWeight: "700",
+                color: "black",
+              }}
+              href={`/${props.race.route}/registrace`}
+            >
+              <ListItemText primary={"Registrace"} />
+            </Link>
+          </ListItemButton>
+        </ListItem>
         {navItems.map((item) => (
           <ListItem key={item.route} disablePadding>
             <ListItemButton sx={{ textAlign: "center" }}>

@@ -47,7 +47,7 @@ export interface IRegistrationDto {
   //Doplňkový prodej
   registration_upsells: { data: IRegistrationUpsells[] };
 }
-interface RegistrationCompetitors {
+export interface RegistrationCompetitors {
   id: string;
   first_name: string;
   last_name?: string;
@@ -62,7 +62,7 @@ interface RegistrationAccompaniments {
   last_name: string;
   phone: string;
 }
-interface IRegistrationUpsells {
+export interface IRegistrationUpsells {
   id: string;
   id_race_upsell: string; // propojí se na "race_upsells" podle kterého se určí o co jde
   amount: string;

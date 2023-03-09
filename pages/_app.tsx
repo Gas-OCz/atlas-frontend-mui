@@ -90,6 +90,11 @@ const theme = createTheme({
 
     h5: {
       fontWeight: "bold",
+      fontSize: 20,
+    },
+    h6: {
+      fontWeight: "bold",
+      fontSize: 15,
     },
   },
 
@@ -106,7 +111,6 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           "& .MuiBreadcrumbs-root": {
-            padding: 0,
             paddingTop: 0,
             paddingBottom: 0,
           },
@@ -116,13 +120,7 @@ const theme = createTheme({
     MuiFormControl: {
       styleOverrides: { root: { marginTop: "11px", marginBottom: "11px" } },
     },
-    MuiCardActions: {
-      styleOverrides: {
-        root: {
-          padding: 0,
-        },
-      },
-    },
+
     MuiBreadcrumbs: {
       styleOverrides: {
         root: {
