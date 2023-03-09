@@ -26,6 +26,7 @@ export interface IRaceUpsell {
 }
 
 export interface IRegistrationDto {
+  id: string;
   club_name: string;
   team_name: string;
   note: string;

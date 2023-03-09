@@ -1,11 +1,10 @@
-import React, { FC, useEffect } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import { HttpError, useList } from "@pankod/refine-core";
 import {
   Create,
   Box,
   TextField,
   Autocomplete,
-  useAutocomplete,
   Button,
   SaveButton,
   Step,
@@ -16,6 +15,8 @@ import {
   Typography,
   Alert,
   Grid,
+  Tooltip,
+  useAutocomplete,
 } from "@pankod/refine-mui";
 
 import {
@@ -39,26 +40,37 @@ import {
   IRegistrationDto,
   RegistrationProps,
 } from "@components/sections/registration/interfaces";
+import { useRouter } from "next/dist/client/router";
+import { FormContext } from "@contexts/form";
+import { validRC } from "../../../utilites/validate";
 
-const stepTitles = ["1", "2", "3"];
-
+const stepTitles = ["Kategorie", "Hlídka", "Doplňky"];
+export interface InputValue {
+  [key: string]: string;
+}
 export const Registration: FC<RegistrationProps> = ({ race }) => {
+  const formContext = useContext(FormContext);
   const {
     getValues,
     saveButtonProps,
-    refineCore: { formLoading, onFinish },
+    refineCore: { formLoading, onFinish, mutationResult },
     register,
     handleSubmit,
     control,
     reset,
+    watch,
     clearErrors,
     formState: { errors },
     steps: { currentStep, gotoStep },
   } = useStepsForm<IRegistrationDto, HttpError, IRegistrationDto>({
+    stepsProps: { defaultStep: Number(formContext?.state?.step ?? "0") ?? 0 },
     refineCoreProps: {
       resource: "registrations",
+      redirect: false,
+
       metaData: {
         fields: [
+          "id",
           "team_name",
           "club_name",
           "id_race",
@@ -80,7 +92,7 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
         ],
       },
     },
-    defaultValues: {
+    defaultValues: formContext?.state.data ?? {
       team_name: "",
       id_race: race.id_race,
       club_name: "",
@@ -127,25 +139,76 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
         value: race?.id_race,
       },
     ],
+    onSearch: (value) => [
+      {
+        field: "title",
+        operator: "contains",
+        value,
+      },
+    ],
   });
+  const [inputValue, setInputValue] = useState<InputValue>({});
+
   const { fields: competitors } = useFieldArray({
     name: "registration_competitors.data",
     control,
   });
 
-  // const { fields: accompaniments } = useFieldArray({
-  //   name: "registration_accompaniments.data",
-  //   control,
-  // });
-  //const watchFieldArray = watch("registration_competitors");
   const controlledFields = competitors.map((field) => {
     return {
       ...field,
     };
   });
+  const router = useRouter();
+  const { push } = router;
+
+  const onSubmit = async (data: IRegistrationDto) => {
+    console.log(data);
+    console.log(mutationResult);
+    await onFinish(data);
+  };
 
   useEffect(() => {
-    if (dataUpsell?.data && dataUpsell?.data?.length > 0) {
+    if (mutationResult.isSuccess) {
+      console.log(mutationResult.data.data);
+      console.log(mutationResult);
+
+      if (mutationResult?.data?.data?.id && !mutationResult.error) {
+        formContext?.dispatch({
+          type: "setSuccessId",
+          payload: mutationResult.data.data.id,
+        });
+        push(`/${race.route}/registrace-dokoncena`);
+      }
+
+      //formContext?.dispatch({type: "setSuccessId", payload: mutationResult.data.data});
+      //
+    }
+  }, [mutationResult?.isSuccess]);
+
+  useEffect(() => {
+    const subscription = watch(() => {
+      formContext?.dispatch({
+        type: "setData",
+        payload: JSON.stringify(getValues()),
+      });
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  useEffect(() => {
+    formContext?.dispatch({
+      type: "setStep",
+      payload: currentStep.toString(),
+    });
+  }, [currentStep]);
+
+  useEffect(() => {
+    if (
+      dataUpsell?.data &&
+      dataUpsell?.data?.length > 0 &&
+      !formContext?.state?.data
+    ) {
       reset({
         id_race: race.id_race,
         registration_competitors: {
@@ -168,6 +231,9 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
             },
           ],
         },
+        registration_accompaniments: {
+          data: [{ first_name: "", last_name: "", phone: "" }],
+        },
         registration_upsells: {
           data: dataUpsell?.data.map((item) => {
             return {
@@ -180,14 +246,24 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
       });
     }
   }, [dataUpsell?.data]);
-
+  const [setupCategories, setSetupCategories] = useState<{
+    doprovod: boolean;
+  }>();
   //const theme = useTheme();
   // const isSmallOrLess = useMediaQuery(theme.breakpoints.down("sm"));
+  useEffect(() => {
+    const selectedCategory = data?.data?.find(
+      (value) => value.id === getValues().id_race_categories
+    );
+    setSetupCategories({ doprovod: selectedCategory?.accompaniment ?? false });
+  }, [getValues().id_race_categories]);
+
+  useEffect(() => {
+    console.log(setupCategories);
+  }, [setupCategories]);
 
   if (isLoading || isLoadingUpsell) return <>Loading ...</>;
-
-  console.log(getValues());
-
+  console.log(errors);
   const renderFormByStep = (step: number) => {
     switch (step) {
       case 0: {
@@ -275,6 +351,7 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
                 render={({ field }) => (
                   <TextField
                     {...field}
+                    size={"small"}
                     onChange={(value) => {
                       clearErrors(field.name);
                       field.onChange(value.target.value);
@@ -296,6 +373,7 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
                 render={({ field }) => (
                   <TextField
                     {...field}
+                    size={"small"}
                     onChange={(value) => {
                       clearErrors(field.name);
                       field.onChange(value.target.value);
@@ -318,17 +396,29 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
         return (
           <>
             {controlledFields.map((item, index) => (
-              <Box key={`registration_competitors${item.id}`}>
+              <Box
+                key={`registration_competitors${item.id}`}
+                sx={{
+                  padding: 1,
+                  border: "1px solid #1A4D2E",
+                  borderRadius: "4px",
+                  marginBottom: index === 0 ? "8px" : 0,
+                }}
+              >
+                <Typography variant={"subtitle1"}>
+                  Zavodník č.{index + 1}
+                </Typography>
                 <Box sx={{ display: "flex", rowGap: 1, columnGap: 1 }}>
                   <Controller
                     control={control}
                     key={item.first_name}
                     name={`registration_competitors.data.${index}.first_name`}
-                    rules={{ required: "Jmeno nesmí být prázde" }}
+                    rules={{ required: "Jméno nesmí být prázdné" }}
                     render={({ field }) => {
                       return (
                         <TextField
                           {...field}
+                          size={"small"}
                           onChange={(value) => {
                             clearErrors(field.name);
                             field.onChange(value.target.value);
@@ -353,11 +443,12 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
                   <Controller
                     control={control}
                     name={`registration_competitors.data.${index}.last_name`}
-                    rules={{ required: "Prijmeni nesmí být prázde" }}
+                    rules={{ required: "Příjmení nesmí být prázdné" }}
                     render={({ field }) => {
                       return (
                         <TextField
                           {...field}
+                          size={"small"}
                           onChange={(value) => {
                             clearErrors(field.name);
                             field.onChange(value.target.value);
@@ -378,31 +469,42 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
                       );
                     }}
                   />
+
                   <Controller
                     control={control}
                     name={`registration_competitors.data.${index}.personal_id`}
-                    rules={{ required: "RC nesmí být prázde" }}
+                    rules={{
+                      required: "Rodné číslo nesmí být prázdné",
+                      validate: validRC,
+                    }}
                     render={({ field }) => {
                       return (
-                        <TextField
-                          {...field}
-                          onChange={(value) => {
-                            clearErrors(field.name);
-                            field.onChange(value.target.value);
-                          }}
-                          error={
-                            !!errors.registration_competitors?.data?.[index]
-                              ?.personal_id
+                        <Tooltip
+                          title={
+                            "Každý závodník je pojištěny, rodné číslo je podmínka platnosti."
                           }
-                          helperText={
-                            errors.registration_competitors?.data?.[index]
-                              ?.personal_id?.message
-                          }
-                          margin="normal"
-                          fullWidth
-                          id={`registration_competitors.${index}.personal_id`}
-                          label={`Rodne cislo`}
-                        />
+                        >
+                          <TextField
+                            {...field}
+                            size={"small"}
+                            onChange={(value) => {
+                              clearErrors(field.name);
+                              field.onChange(value.target.value);
+                            }}
+                            error={
+                              !!errors.registration_competitors?.data?.[index]
+                                ?.personal_id
+                            }
+                            helperText={
+                              errors.registration_competitors?.data?.[index]
+                                ?.personal_id?.message
+                            }
+                            margin="normal"
+                            fullWidth
+                            id={`registration_competitors.${index}.personal_id`}
+                            label={`Rodné číslo`}
+                          />
+                        </Tooltip>
                       );
                     }}
                   />
@@ -410,12 +512,19 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
                 <Box sx={{ display: "flex", rowGap: 1, columnGap: 1 }}>
                   <Controller
                     control={control}
-                    rules={{ required: "email nesmí být prázde" }}
+                    rules={{
+                      required: "Email nesmí být prázdý",
+                      pattern: {
+                        value: /\S+@\S+\.\S+/,
+                        message: "Email není platný",
+                      },
+                    }}
                     name={`registration_competitors.data.${index}.email`}
                     render={({ field }) => {
                       return (
                         <TextField
                           {...field}
+                          size={"small"}
                           onChange={(value) => {
                             clearErrors(field.name);
                             field.onChange(value.target.value);
@@ -439,11 +548,19 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
                   <Controller
                     control={control}
                     name={`registration_competitors.data.${index}.phone_number`}
-                    rules={{ required: "phone_number nesmí být prázde" }}
+                    rules={{
+                      required: "Telefon nesmí být prázdný",
+                      pattern: {
+                        value:
+                          /^(\+420|\+421|\+48)? ?[1-9][0-9]{2} ?[0-9]{3} ?[0-9]{3}$/,
+                        message: "Telefon není platný",
+                      },
+                    }}
                     render={({ field }) => {
                       return (
                         <TextField
                           {...field}
+                          size={"small"}
                           onChange={(value) => {
                             clearErrors(field.name);
                             field.onChange(value.target.value);
@@ -469,13 +586,24 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
                   <Controller
                     control={control}
                     name={`registration_competitors.data.${index}.id_race_shirt`}
-                    rules={{ required: "phone_number nesmí být prázde" }}
+                    rules={{
+                      required:
+                        "Triko nesmí být prázdné, je součástí startovného",
+                    }}
                     render={({ field }) => {
                       return (
                         <Autocomplete
-                          {...autocompleteProps}
+                          options={autocompleteProps.options || []}
                           fullWidth
                           getOptionLabel={(option) => option.title ?? null}
+                          inputValue={inputValue?.[index] ?? ""}
+                          onInputChange={(event, value1) => {
+                            setInputValue({
+                              ...inputValue,
+                              [index]: value1,
+                            });
+                            return value1;
+                          }}
                           isOptionEqualToValue={(option, value) =>
                             value === undefined ||
                             option?.id.toString() === value.toString()
@@ -492,7 +620,7 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
                             clearErrors(field.name);
                             field.onChange(newValue?.id ?? "");
                           }}
-                          placeholder="Vyberte tricko"
+                          placeholder="Vyberte triko"
                           renderInput={(params) => (
                             <TextField
                               error={
@@ -504,6 +632,7 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
                                   ?.id_race_shirt?.message
                               }
                               {...params}
+                              size={"small"}
                               label="Tricko"
                               margin="normal"
                               variant="outlined"
@@ -517,9 +646,120 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
                 </Box>
               </Box>
             ))}
+            {setupCategories?.doprovod && (
+              <Box
+                sx={{
+                  padding: 1,
+                  border: "1px solid #1A4D2E",
+                  borderRadius: "4px",
+                  marginTop: "8px",
+                }}
+              >
+                <Typography>Doprovod</Typography>
+                <Box sx={{ display: "flex", rowGap: 1, columnGap: 1 }}>
+                  <Controller
+                    control={control}
+                    name={`registration_accompaniments.data.0.first_name`}
+                    rules={{ required: "Jméno nesmí být prázdné" }}
+                    render={({ field }) => {
+                      return (
+                        <TextField
+                          {...field}
+                          size={"small"}
+                          onChange={(value) => {
+                            clearErrors(field.name);
+                            field.onChange(value.target.value);
+                          }}
+                          error={
+                            !!errors.registration_accompaniments?.data?.[0]
+                              ?.first_name
+                          }
+                          helperText={
+                            errors.registration_accompaniments?.data?.[0]
+                              ?.first_name?.message
+                          }
+                          margin="normal"
+                          fullWidth
+                          id={`registration_competitors.${0}.first_name`}
+                          label={`Jméno`}
+                        />
+                      );
+                    }}
+                  />
+                  <Controller
+                    control={control}
+                    name={`registration_accompaniments.data.${0}.last_name`}
+                    rules={{ required: "Příjmení nesmí být prázdné" }}
+                    render={({ field }) => {
+                      return (
+                        <TextField
+                          {...field}
+                          size={"small"}
+                          onChange={(value) => {
+                            clearErrors(field.name);
+                            field.onChange(value.target.value);
+                          }}
+                          error={
+                            !!errors.registration_accompaniments?.data?.[0]
+                              ?.last_name
+                          }
+                          helperText={
+                            errors.registration_accompaniments?.data?.[0]
+                              ?.last_name?.message
+                          }
+                          margin="normal"
+                          fullWidth
+                          id={`registration_accompaniments.data.${0}.last_name`}
+                          label={`Prijmeni`}
+                        />
+                      );
+                    }}
+                  />
+
+                  <Controller
+                    control={control}
+                    name={`registration_accompaniments.data.${0}.phone`}
+                    rules={{
+                      required: "Telefon nesmí být prázdný",
+                      pattern: {
+                        value:
+                          /^(\+420|\+421|\+48)? ?[1-9][0-9]{2} ?[0-9]{3} ?[0-9]{3}$/,
+                        message: "Telefon není platný",
+                      },
+                    }}
+                    render={({ field }) => {
+                      return (
+                        <TextField
+                          {...field}
+                          size={"small"}
+                          onChange={(value) => {
+                            clearErrors(field.name);
+                            field.onChange(value.target.value);
+                          }}
+                          value={field?.value ?? ""}
+                          error={
+                            !!errors.registration_accompaniments?.data?.[0]
+                              ?.phone
+                          }
+                          helperText={
+                            errors.registration_accompaniments?.data?.[0]?.phone
+                              ?.message
+                          }
+                          margin="normal"
+                          fullWidth
+                          id={`registration_accompaniments.data.${0}.phone`}
+                          label={`Telefon`}
+                        />
+                      );
+                    }}
+                  />
+                </Box>
+              </Box>
+            )}
             <Box>
               <TextField
                 {...inputProps}
+                size={"small"}
                 key={"note"}
                 margin="normal"
                 inputRef={ref}
@@ -553,7 +793,6 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
                     control={control}
                     name={`registration_upsells.data.${index}.amount`}
                     rules={{
-                      required: "phone_number nesmí být prázde",
                       min: 0,
                       max: 10,
                     }}
@@ -594,8 +833,12 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
     <Create
       title={<Typography variant={"h5"}>Registrace</Typography>}
       wrapperProps={{
-        sx: { backgroundColor: "transparent", boxShadow: "none" },
+        sx: { backgroundColor: "transparent", boxShadow: "none", padding: 0 },
       }}
+      footerButtonProps={{
+        sx: { padding: 0, textAlign: "right", float: "right" },
+      }}
+      contentProps={{ sx: { padding: 0 } }}
       isLoading={formLoading}
       saveButtonProps={saveButtonProps}
       footerButtons={
@@ -611,6 +854,7 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
           )}
           {currentStep < stepTitles.length - 1 && (
             <Button
+              variant="contained"
               onClick={() => {
                 gotoStep(currentStep + 1);
               }}
@@ -619,7 +863,7 @@ export const Registration: FC<RegistrationProps> = ({ race }) => {
             </Button>
           )}
           {currentStep === stepTitles.length - 1 && (
-            <SaveButton color={"secondary"} onClick={handleSubmit(onFinish)} />
+            <SaveButton color={"secondary"} onClick={handleSubmit(onSubmit)} />
           )}
         </>
       }

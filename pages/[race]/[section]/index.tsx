@@ -10,6 +10,7 @@ import { Footer } from "@components/layout/footer";
 import CustomGallery from "@components/sections/gallery";
 import { Box } from "@pankod/refine-mui";
 import { Registration } from "@components/sections/registration";
+import { Success } from "@components/sections/registration/success";
 
 export interface PageProps {
   race: IRaceSet;
@@ -49,6 +50,12 @@ const Section: FC<PageProps> = (props) => {
     }
 
     default: {
+      if (section === "registrace-dokoncena")
+        return (
+          <ContentLayout {...props} Footer={Footer}>
+            <Success />
+          </ContentLayout>
+        );
       return (
         // <ContentLayout {...props} Footer={Footer}>
         <Box>404</Box>

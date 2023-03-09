@@ -290,7 +290,7 @@ const MyMenu = (props: PageProps) => {
           </Box>
         </Box>
       </Box>
-      {section !== "registrace" && (
+      {section !== "registrace" && section !== "registrace-dokoncena" && (
         <Box
           sx={{
             marginTop: { xs: 0, lg: -8 },

@@ -14,6 +14,7 @@ import { Title, Sider, Layout, Header } from "@components/layout";
 import { Footer } from "@components/layout/footer";
 import localFont from "next/font/local";
 import { createTheme } from "@mui/material";
+import { FormProvider } from "@contexts/form";
 export const nudista = localFont({
   src: [
     {
@@ -112,6 +113,16 @@ const theme = createTheme({
         },
       },
     },
+    MuiFormControl: {
+      styleOverrides: { root: { marginTop: "11px", marginBottom: "11px" } },
+    },
+    MuiCardActions: {
+      styleOverrides: {
+        root: {
+          padding: 0,
+        },
+      },
+    },
     MuiBreadcrumbs: {
       styleOverrides: {
         root: {
@@ -126,40 +137,42 @@ const theme = createTheme({
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <GlobalStyles
-          styles={{
-            html: { WebkitFontSmoothing: "auto" },
-          }}
-        />
-        <Refine
-          routerProvider={routerProvider}
-          dataProvider={gqlDataProvider}
-          ReadyPage={ReadyPage}
-          catchAll={<ErrorComponent />}
-          Title={Title}
-          resources={[
-            {
-              name: "homepage",
-              options: {
-                route: "",
+      <FormProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <GlobalStyles
+            styles={{
+              html: { WebkitFontSmoothing: "auto" },
+            }}
+          />
+          <Refine
+            routerProvider={routerProvider}
+            dataProvider={gqlDataProvider}
+            ReadyPage={ReadyPage}
+            catchAll={<ErrorComponent />}
+            Title={Title}
+            resources={[
+              {
+                name: "homepage",
+                options: {
+                  route: "",
+                },
               },
-            },
-            {
-              name: "texts",
-            },
-          ]}
-          Sider={Sider}
-          Footer={Footer}
-          Layout={Layout}
-          Header={Header}
-        >
-          <main className={`${nudista.className} `}>
-            <Component {...pageProps} />
-          </main>
-        </Refine>
-      </ThemeProvider>
+              {
+                name: "texts",
+              },
+            ]}
+            Sider={Sider}
+            Footer={Footer}
+            Layout={Layout}
+            Header={Header}
+          >
+            <main className={`${nudista.className} `}>
+              <Component {...pageProps} />
+            </main>
+          </Refine>
+        </ThemeProvider>
+      </FormProvider>
     </>
   );
 }
