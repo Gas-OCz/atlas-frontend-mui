@@ -8,7 +8,7 @@ import { EMenu, menuItems } from "@components/layout/menu";
 import TextComponent from "@components/sections/texts";
 import { Footer } from "@components/layout/footer";
 import CustomGallery from "@components/sections/gallery";
-import { Box, Stack, Typography } from "@pankod/refine-mui";
+import { Box, Stack, SxProps, Typography } from "@pankod/refine-mui";
 import { RegistrationLeft } from "@components/sections/registration/left";
 import { Success } from "@components/sections/registration/success";
 import { RegistrationRight } from "@components/sections/registration/right";
@@ -19,6 +19,7 @@ export interface PageProps {
   section: string;
   pageType: EMenu;
   homepagePosition?: "LEFT" | "RIGHT";
+  sx?: SxProps;
 }
 
 const Section: FC<PageProps> = (props) => {
@@ -28,7 +29,6 @@ const Section: FC<PageProps> = (props) => {
 
   switch (pageType) {
     case EMenu.registration: {
-      console.log("props?.homepagePosition", props?.homepagePosition);
       return (
         <ContentLayout {...props} Footer={Footer}>
           {props?.homepagePosition === "LEFT" && (
@@ -44,6 +44,23 @@ const Section: FC<PageProps> = (props) => {
       return (
         <ContentLayout {...props} Footer={Footer}>
           <CustomGallery {...props} />
+          <TextComponent
+            {...props}
+            sx={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              backgroundColor: "white",
+              alignItems: "center",
+              position: "relative",
+              textAlign: "center",
+              bottom: 0,
+              "& img": {
+                paddingX: { xs: 0, md: 3 },
+              },
+            }}
+            section={"partners"}
+          />
         </ContentLayout>
       );
     }
@@ -52,6 +69,23 @@ const Section: FC<PageProps> = (props) => {
       return (
         <ContentLayout {...props} Footer={Footer}>
           <TextComponent {...props} />
+          <TextComponent
+            {...props}
+            sx={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              backgroundColor: "white",
+              alignItems: "center",
+              position: "relative",
+              textAlign: "center",
+              bottom: 0,
+              "& img": {
+                paddingX: { xs: 0, md: 3 },
+              },
+            }}
+            section={"partners"}
+          />
         </ContentLayout>
       );
     }

@@ -12,6 +12,7 @@ import {
   Drawer,
   DateField,
   Stack,
+  Typography,
 } from "@pankod/refine-mui";
 import React from "react";
 import { Menu as MenuIcon } from "@mui/icons-material";
@@ -191,9 +192,12 @@ const MyMenu = (props: PageProps) => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { lg: "none" } }}
+            sx={{ color: "black", mr: 2, display: { lg: "none" } }}
           >
             <MenuIcon sx={{ color: "black" }} />
+            <Typography sx={{ paddingLeft: 1 }} variant={"h5"}>
+              Menu
+            </Typography>
           </IconButton>
 
           <Box

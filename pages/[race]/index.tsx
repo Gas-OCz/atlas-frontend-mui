@@ -1,4 +1,4 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { GetServerSideProps } from "next";
 import { ContentLayout } from "@components/layout/layout/contentLayout";
 import { LayoutProps } from "@pankod/refine-core";
@@ -9,6 +9,8 @@ import Homepage from "@components/sections/homepage/homepage";
 import { Footer } from "@components/layout/footer";
 import homepage from "@components/sections/homepage/homepage";
 import HomepageRace from "../index";
+import TextComponent from "@components/sections/texts";
+import { Box } from "@pankod/refine-mui";
 interface PageProps extends LayoutProps {
   race: IRaceSet;
   section: string;
@@ -34,7 +36,26 @@ const RaceHomePage: FC<PageProps> = (props) => {
   } else {
     return (
       <ContentLayout Footer={Footer} {...props}>
-        <Homepage {...props} />
+        <Box sx={{ minHeight: 450 }}>
+          <Homepage {...props} />
+        </Box>
+        <TextComponent
+          {...props}
+          sx={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            backgroundColor: "white",
+            alignItems: "center",
+            position: "relative",
+            textAlign: "center",
+            bottom: 0,
+            "& img": {
+              paddingX: { xs: 0, md: 3 },
+            },
+          }}
+          section={"partners"}
+        />
       </ContentLayout>
     );
   }

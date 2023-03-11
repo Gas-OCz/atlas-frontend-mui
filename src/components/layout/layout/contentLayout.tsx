@@ -29,7 +29,8 @@ export const ContentLayout: React.FC<ContentLayout> = (props) => {
           <Box
             component="main"
             sx={{
-              p: { xs: 0, md: 1, lg: 2 },
+              pt: { xs: 0, md: 1, lg: 2 },
+              px: { xs: 0, md: 1, lg: 2 },
               flexGrow: 1,
               backgroundColor: "#FAF3E3",
             }}

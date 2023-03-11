@@ -12,7 +12,7 @@ const fields = {
   fields: ["id", "title", "htmlcontent"],
 };
 const TextComponent: FC<PageProps> = (props) => {
-  const { section, race } = props;
+  const { section, race, sx } = props;
   const { homepageId } = race;
 
   const { data, isLoading } = useList<ITexts, HttpError>({
@@ -60,7 +60,7 @@ const TextComponent: FC<PageProps> = (props) => {
               {item.title}
             </Box>
           </Box>
-          <Box sx={{ paddingX: 3, paddingTop: 3 }}>
+          <Box sx={{ ...sx, paddingX: 3, paddingTop: 3 }}>
             <div dangerouslySetInnerHTML={{ __html: item?.htmlcontent }} />
           </Box>
         </Fragment>
