@@ -130,8 +130,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         "id_file_title",
         "route",
         "id_race",
-        "place",
-        { race: ["start_date", "end_date"] },
+        { race: ["start_date", "place", "end_date"] },
       ],
     },
   });
@@ -154,7 +153,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         prerex: race?.prerex ?? "",
         startDate: race?.race?.start_date ?? "",
         endDate: race?.race?.end_date ?? "",
-        place: race?.place ?? "",
+        place: race?.race?.place ?? "",
         homepageId: race?.id || null,
         id_file: race?.id_file ?? "",
       },
