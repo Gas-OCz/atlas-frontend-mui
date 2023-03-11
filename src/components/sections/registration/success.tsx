@@ -17,6 +17,7 @@ interface IRegistration {
   team_name: string;
   registration_upsells: {
     price: string;
+    amount: string;
     race_upsell: { title: string };
   }[];
   price: string;
@@ -32,6 +33,8 @@ export const Success: FC<PageProps> = ({ race }) => {
       !formContext?.state?.successId
     )
       router.push(`/${race.route}`);
+    formContext?.dispatch({ type: "setData", payload: "{}" });
+    formContext?.dispatch({ type: "setStep", payload: "0" });
   }, [formContext?.state?.successId]);
 
   const { data, isLoading } = useOne<IRegistration, HttpError>({
@@ -62,6 +65,12 @@ export const Success: FC<PageProps> = ({ race }) => {
     },
     id: formContext?.state?.successId as BaseKey,
   });
+  const sum =
+    data?.data.registration_upsells.reduce(
+      (act, val) => parseInt(val?.price) * parseInt(val?.amount) + act,
+      0
+    ) ?? 0;
+
   if (isLoading) return <>Loading ...</>;
   return (
     <Box>
@@ -79,7 +88,10 @@ export const Success: FC<PageProps> = ({ race }) => {
           Registrace úspěšně dokončena
         </Box>
       </Box>
-      <Box display={"flex"} justifyContent={"space-between"}>
+      <Box
+        sx={{ display: { sx: "grid", md: "flex" } }}
+        justifyContent={"space-between"}
+      >
         <Box>
           <Stack
             sx={{
@@ -87,22 +99,22 @@ export const Success: FC<PageProps> = ({ race }) => {
               paddingTop: 3,
             }}
           >
-            <Stack direction={"row"}>
+            <Stack direction={"row"} sx={{ paddingBottom: 2 }}>
               <Typography>Registrovaná kategorie:</Typography>
               <Typography sx={{ fontWeight: "bold", paddingX: 0.5 }}>
                 {data?.data.race_category.title}
               </Typography>
             </Stack>
-
-            <Stack direction={"row"} sx={{ paddingBottom: 2 }}>
-              <Typography>Doplňky:</Typography>
-              <Typography sx={{ fontWeight: "bold", paddingX: 0.5 }}>
-                {data?.data.registration_upsells
-                  .map((u) => `${u.race_upsell.title}`)
-                  .join(", ")}
-              </Typography>
-            </Stack>
-
+            {sum > 0 && (
+              <Stack direction={"row"} sx={{ paddingBottom: 2 }}>
+                <Typography>Doplňky:</Typography>
+                <Typography sx={{ fontWeight: "bold", paddingX: 0.5 }}>
+                  {data?.data.registration_upsells
+                    .map((u) => `${u.race_upsell.title}`)
+                    .join(", ")}
+                </Typography>
+              </Stack>
+            )}
             <Stack direction={"column"} sx={{ paddingBottom: 2 }}>
               <Box>
                 Pro dokončení registrace je nutné provést platbu ve výši{" "}
@@ -126,28 +138,22 @@ export const Success: FC<PageProps> = ({ race }) => {
                   2000396876/2010.
                 </Box>
               </Box>
-              <Typography>
-                Pro automatickou identifikaci platby prosím použijte variabilní
-                symbol{" "}
-                <Box
-                  component={"span"}
-                  sx={{ fontWeight: "bold" }}
-                  display={"inline"}
-                >
-                  {data?.data.variable_number}.
-                </Box>
-              </Typography>
             </Stack>
-
-            <Stack direction={"row"} sx={{ paddingBottom: 2 }}>
-              <Typography>
-                Souhrn Vaší registrace jsme zaslali na email{" "}
-              </Typography>
-              <Typography sx={{ fontWeight: "bold", paddingX: 0.5 }}>
-                {data?.data.registration_competitors[0]?.email}.
-              </Typography>
-            </Stack>
-
+            <Box paddingBottom={2}>
+              Pro automatickou identifikaci platby prosím použijte variabilní
+              symbol{" "}
+              <Box
+                component={"span"}
+                sx={{ fontWeight: "bold" }}
+                display={"inline"}
+              >
+                {data?.data.variable_number}.
+              </Box>
+            </Box>
+            <Box paddingBottom={2}>
+              Souhrn Vaší registrace jsme zaslali na email{" "}
+              <b>{data?.data.registration_competitors[0]?.email}.</b>
+            </Box>
             <Stack direction={"row"} sx={{ paddingBottom: 2 }}>
               <Typography>
                 Děkujeme za registraci, budeme se na Vás těšit na startu{" "}

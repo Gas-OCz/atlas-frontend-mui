@@ -30,6 +30,12 @@ const Homepage: FC<PageProps> = (props) => {
     resource: resource,
     metaData: fields,
     config: {
+      sort: [
+        {
+          field: "created_at",
+          order: "desc",
+        },
+      ],
       filters: [
         {
           field: "id_homepage",
@@ -114,7 +120,7 @@ const Homepage: FC<PageProps> = (props) => {
                   flexItem
                   color={"black"}
                 >
-                  <DateField value={item?.created_at} />
+                  <DateField value={item?.created_at} format={"DD/MM/YYYY"} />
                 </Divider>
               </div>
             ))}

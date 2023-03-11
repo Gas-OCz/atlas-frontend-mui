@@ -31,8 +31,15 @@ const TextComponent: FC<PageProps> = (props) => {
           value: section,
         },
       ],
+      sort: [
+        {
+          field: "created_at",
+          order: "desc",
+        },
+      ],
     },
   });
+
   if (isLoading) return <Box>Loading ...</Box>;
 
   return (

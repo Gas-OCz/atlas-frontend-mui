@@ -17,6 +17,7 @@ interface PageProps extends LayoutProps {
 
 export interface IRaceSet {
   id_race: string;
+  names: string[];
   place: string;
   route: string;
   title: string;
@@ -61,7 +62,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
+      homepagePosition: race?.homepage_position ?? null,
+
       race: {
+        names: data?.data.map((value: any) => value.title),
         homepageId: race?.id ?? null,
         route: race?.route ?? "homepage",
         title: race?.title ?? "",

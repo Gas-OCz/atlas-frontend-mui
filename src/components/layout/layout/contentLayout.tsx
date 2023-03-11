@@ -8,6 +8,7 @@ export interface ContentLayout extends LayoutProps {
   race: IRaceSet;
   section: string | undefined;
   pageType: EMenu;
+  homepagePosition?: "LEFT" | "RIGHT";
 }
 
 export const ContentLayout: React.FC<ContentLayout> = (props) => {

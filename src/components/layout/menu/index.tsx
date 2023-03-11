@@ -18,16 +18,18 @@ import { Menu as MenuIcon } from "@mui/icons-material";
 
 import Link from "next/link";
 import Image from "next/image";
-import whiteLogo from "public/logo-white.svg";
+import whiteLogo from "public/logo/LogoAA-08.png";
 import { LayoutProps } from "@pankod/refine-core";
 import { IRaceSet } from "../../../../pages/[race]";
 import { nhost } from "../../../utilites/nhost";
 import { cheddarGothic, nudista } from "../../../../pages/_app";
+import { useRouter } from "next/navigation";
 
 export interface PageProps extends LayoutProps {
   race: IRaceSet;
   section: string | undefined;
   pageType: EMenu;
+  homepagePosition?: "LEFT" | "RIGHT";
 }
 
 export enum EMenu {
@@ -45,11 +47,49 @@ export const menuItems = [
   { route: "results", title: "Výsledky", type: EMenu.texts },
   { route: "contacts", title: "Kontakty", type: EMenu.texts },
 ];
+
+export const menuItemsBike = [
+  { route: "", title: "Home", type: EMenu.homepage },
+  { route: "about", title: "O závodu", type: EMenu.texts },
+  { route: "propozice", title: "Propozice", type: EMenu.texts },
+  { route: "contacts", title: "Kontakty", type: EMenu.texts },
+];
+
+// const themeColorOrange = {
+//   footer: "#1A4D2E",
+//   menu: "#ff9f29",
+//   registraceButton: {
+//     font: "white",
+//     background: "#1A4D2E",
+//   },
+//   menuActive: "#1A4D2E",
+//   menuSelected: {
+//     background: "#ff9f29",
+//     text: "#1A4D2E",
+//   },
+// };
+
+const themeColorGreen = {
+  footer: "#1A4D2E",
+  menu: "#1A4D2E",
+  registraceButton: {
+    font: "black",
+    background: "#ff9f29",
+  },
+  menuActive: "#ff9f29",
+  menuSelected: {
+    background: "#1A4D2E",
+    text: "#ff9f29",
+  },
+};
 const MyMenu = (props: PageProps) => {
   const { race } = props;
-  const { startDate, endDate, place } = race;
 
-  const navItems = menuItems;
+  const { startDate, endDate, place } = race;
+  const router = useRouter();
+  console.log(race.names);
+  const navItems =
+    props?.homepagePosition === "RIGHT" ? menuItemsBike : menuItems;
   const drawerWidth = 240;
   //const classes = useStyles();
 
@@ -59,69 +99,54 @@ const MyMenu = (props: PageProps) => {
     setMobileOpen((prevState) => !prevState);
   };
 
+  const themeColor = themeColorGreen;
+
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <List>
         <ListItem disablePadding>
           <ListItemButton
-            sx={{
-              textAlign: "center",
-            }}
+            onClick={() => router.push(`/${race.route}/registrace`)}
           >
-            <Link
-              style={{
-                textDecoration: "none",
-                color: "black",
-              }}
-              href={`/`}
-            >
-              <ListItemText primary={"Vybrat závod"} />
-            </Link>
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton
-            sx={{
-              textAlign: "center",
-            }}
-          >
-            <Link
-              style={{
-                textDecoration: "none",
-                fontWeight: "700",
-                color: "black",
-              }}
-              href={`/${props.race.route}/registrace`}
-            >
-              <ListItemText primary={"Registrace"} />
-            </Link>
+            <ListItemText primary={`Registrace`} />
           </ListItemButton>
         </ListItem>
         {navItems.map((item) => (
           <ListItem key={item.route} disablePadding>
-            <ListItemButton sx={{ textAlign: "center" }}>
-              <Link
-                style={{
-                  textDecoration: "none",
-                  color: "black",
-                }}
-                href={`/${props.race.route}/${item.route}`}
-              >
-                <ListItemText primary={item.title} />
-              </Link>
+            <ListItemButton
+              onClick={() => router.push(`/${race.route}/${item.route}`)}
+            >
+              <ListItemText primary={item.title} />
             </ListItemButton>
           </ListItem>
         ))}
+        <ListItem
+          disablePadding
+          sx={{
+            backgroundColor: themeColor.menuActive,
+            color: "white",
+            fontWeight: "bold",
+          }}
+        >
+          <ListItemButton onClick={() => router.push(`/`)}>
+            <ListItemText primary={`${race.names.join("/")}`} />
+          </ListItemButton>
+        </ListItem>
       </List>
     </Box>
   );
 
   //const container = window !== undefined ? () => document.body : undefined;
   const activeMenuSx = {
-    backgroundImage: "linear-gradient(transparent 58%, #ff9f29 0%)",
-    paddingX: 3,
+    backgroundImage: "linear-gradient(transparent 48%, #ff9f29 0%)",
+    paddingX: 1.5,
 
-    paddingY: 0.2,
+    paddingY: 0.5,
+  };
+  const menuSx = {
+    paddingX: 0,
+
+    paddingY: 0.5,
   };
 
   const toolbar = {
@@ -130,7 +155,7 @@ const MyMenu = (props: PageProps) => {
     },
   };
   const section = props.section;
-  console.log(section);
+  const raceTitle = race?.title?.split(/\s/g);
 
   return (
     <Box>
@@ -206,7 +231,7 @@ const MyMenu = (props: PageProps) => {
                         item.route === section ||
                         (section === "homepage" && item.route === "")
                           ? activeMenuSx
-                          : undefined
+                          : menuSx
                       }
                     >
                       {item.title}
@@ -217,15 +242,18 @@ const MyMenu = (props: PageProps) => {
 
               <Link
                 style={{
+                  position: "absolute",
+                  right: 0,
                   textDecoration: "none",
-                  color: "#ff9f29",
+                  color: themeColor.menuActive,
+                  width: 280,
                 }}
                 href={`/`}
               >
                 <Button
                   sx={{
                     padding: 0,
-                    color: "#ff9f29",
+                    color: themeColor.menuSelected.text,
                     fontSize: 24,
                     textTransform: "none",
                     fontWeight: "Bold",
@@ -237,12 +265,11 @@ const MyMenu = (props: PageProps) => {
                     sx={{
                       paddingX: 3,
 
-                      paddingY: 0.2,
-                      backgroundImage:
-                        "linear-gradient(transparent 0%, #1A4D2E 0%)",
+                      paddingY: 0.5,
+                      backgroundImage: `linear-gradient(transparent 0%, ${themeColor.menuSelected.background} 0%)`,
                     }}
                   >
-                    Vybrat závod
+                    {"Adventure / Bike"}
                   </Box>
                 </Button>
               </Link>
@@ -254,7 +281,7 @@ const MyMenu = (props: PageProps) => {
         component="main"
         sx={{
           p: 3,
-          backgroundColor: "#1A4D2E",
+          backgroundColor: themeColor.menu,
         }}
       >
         <Box
@@ -265,7 +292,27 @@ const MyMenu = (props: PageProps) => {
           }}
         >
           <Box>
-            <Image src={whiteLogo} alt={whiteLogo} />
+            <Stack direction={"row"}>
+              <Image
+                src={whiteLogo}
+                alt={"whiteLogo"}
+                width={215}
+                style={{ cursor: "pointer" }}
+                onClick={() => router.push(`/${race.route}`)}
+              />
+              <Box
+                sx={{
+                  marginTop: 6,
+                  color: "#FAF3E3",
+                  fontFamily: cheddarGothic.style.fontFamily,
+                }}
+              >
+                <Box sx={{ fontSize: 60 }}>{raceTitle?.[0]}</Box>
+                <Box sx={{ fontSize: 30, marginTop: -2.8 }}>
+                  {raceTitle?.[1]}
+                </Box>
+              </Box>
+            </Stack>
           </Box>
 
           <Box
@@ -350,7 +397,12 @@ const MyMenu = (props: PageProps) => {
           {/*// border: "1px solid #000",*/}
           {/*padding: 1.5,*/}
           {/*textAlign: "center",*/}
-          <Box sx={{ zIndex: 500, backgroundColor: "#ff9f29" }}>
+          <Box
+            sx={{
+              zIndex: 500,
+              backgroundColor: themeColor.registraceButton.background,
+            }}
+          >
             <Link
               style={{ textDecoration: "none" }}
               href={`/${race.route}/registrace`}
@@ -359,9 +411,9 @@ const MyMenu = (props: PageProps) => {
                 sx={{
                   width: "100%",
                   p: { xs: 0.5, lg: 3 },
-                  color: "black",
+                  color: themeColor.registraceButton.font,
                   fontSize: { xs: 25, lg: 40 },
-                  backgroundColor: "#ff9f29",
+                  backgroundColor: themeColor.registraceButton.background,
                   fontWeight: 700,
                   fontStyle: "normal",
                   fontFamily: cheddarGothic.style,

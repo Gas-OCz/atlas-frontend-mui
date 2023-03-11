@@ -94,7 +94,7 @@ export const validRC = (rc: string): boolean | string => {
   const day = rc.substring(4, 6);
   const month = rc.substring(2, 4);
   const year = rc.substring(0, 2);
-  const control = rc.substring(9, 10);
+  const control = rc.substring(9);
 
   const birthYear =
     parseInt(year, 10) < 54
@@ -107,16 +107,8 @@ export const validRC = (rc: string): boolean | string => {
   if (!isValidDate(birthYear, birthMonth, birthDay)) {
     return false;
   }
-  const sude = rc
-    .substring(0, 9)
-    .split("")
-    .filter((num) => parseInt(num) % 2 === 0)
-    .reduce((acc, val) => acc + parseInt(val), 0);
 
-  const liche = rc
-    .substring(0, 9)
-    .split("")
-    .filter((num) => parseInt(num) % 2 !== 0)
-    .reduce((acc, val) => acc + parseInt(val), 0);
-  return liche - sude - 11 === parseInt(control);
+  const vypocet = parseInt(rc.substring(0, 9));
+
+  return vypocet % 11 === parseInt(control) || vypocet % 11 === 10;
 };

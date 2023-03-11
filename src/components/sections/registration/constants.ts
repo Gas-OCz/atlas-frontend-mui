@@ -20,6 +20,7 @@ export const fieldRules = {
     "optional",
     "created_at",
     "updated_at",
+    "id_race_category",
   ],
 };
 export const resourceShirts = "race_shirts";

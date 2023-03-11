@@ -64,6 +64,7 @@ interface RegistrationAccompaniments {
 }
 export interface IRegistrationUpsells {
   id: string;
+  title: string;
   id_race_upsell: string; // propojí se na "race_upsells" podle kterého se určí o co jde
   amount: string;
   price: string; //Jednotková cena s DPH.
@@ -81,6 +82,7 @@ export interface IRaceCategory {
 }
 export interface IRaceCategoryRule {
   id: string;
+  id_race_category: string;
   age_from: number;
   age_to: number;
   sex: ECategorySex;

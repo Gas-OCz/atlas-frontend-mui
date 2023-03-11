@@ -113,6 +113,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       homepagePosition: race?.homepage_position ?? null,
       race: {
+        names: data?.data.map((value: any) => value.title),
         route: race?.route ?? "",
         id_race: race?.id_race ?? null,
         title: race?.title ?? "",

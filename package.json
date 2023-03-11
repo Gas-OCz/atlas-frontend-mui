@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--max_old_space_size=4096 refine dev",
+    "dev": "cross-env NODE_OPTIONS=--max_old_space_size=4096 refine dev -p 9000",
     "build": "refine build",
     "start": "refine start -p 9000",
     "lint": "eslint '**/*.{js,jsx,ts,tsx}'",

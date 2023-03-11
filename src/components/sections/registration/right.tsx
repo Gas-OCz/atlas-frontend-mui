@@ -20,11 +20,7 @@ import {
   IconButton,
 } from "@pankod/refine-mui";
 
-import {
-  Controller,
-  useFieldArray,
-  useStepsForm,
-} from "@pankod/refine-react-hook-form";
+import { Controller, useStepsForm } from "@pankod/refine-react-hook-form";
 
 import {
   fieldRules,
@@ -73,7 +69,6 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
     formState: { errors },
     steps: { currentStep, gotoStep },
   } = useStepsForm<IRegistrationDto, HttpError, IRegistrationDto>({
-    stepsProps: { defaultStep: Number(formContext?.state?.step ?? "0") ?? 0 },
     refineCoreProps: {
       resource: "registrations",
       redirect: false,
@@ -89,6 +84,7 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
             registration_accompaniments: ["first_name", "last_name", "phone"],
             registration_upsells: [
               "id",
+
               "id_race_upsell", // propojí se na "race_upsells" podle kterého se určí o co jde
               "amount",
               "price",
@@ -97,7 +93,9 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
         ],
       },
     },
-    defaultValues: formContext?.state.data ?? {
+    defaultValues: {
+      ...formContext?.state.data,
+    } ?? {
       team_name: "",
       id_race: race.id_race,
       club_name: "",
@@ -134,7 +132,6 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
       ],
     },
   });
-
   const { data: dataUpsell, isLoading: isLoadingUpsell } = useList<
     IRaceUpsell,
     HttpError
@@ -152,22 +149,13 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
     },
   });
 
-  const { fields: competitors } = useFieldArray({
-    name: "registration_competitors.data",
-    control,
-  });
-
-  const controlledFields = competitors.map((field) => {
-    return {
-      ...field,
-    };
-  });
   const router = useRouter();
   const { push } = router;
 
   const onSubmit = async (data: IRegistrationDto) => {
     await onFinish({
       ...data,
+      id_race: race.id_race,
       price: parseInt(formContext?.state.price ?? "0"),
     });
   };
@@ -187,11 +175,11 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
     []
   );
   useEffect(() => {
-    const subscription = watch(() => {
-      setUpsellsValues(getValues().registration_upsells.data);
+    const subscription = watch((value) => {
+      setUpsellsValues(getValues().registration_upsells?.data);
       formContext?.dispatch({
         type: "setData",
-        payload: JSON.stringify(getValues()),
+        payload: JSON.stringify(value),
       });
     });
     return () => subscription.unsubscribe();
@@ -204,48 +192,25 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
     });
   }, [currentStep]);
 
-  useEffect(() => {
-    if (
-      dataUpsell?.data &&
-      dataUpsell?.data?.length > 0 &&
-      !formContext?.state?.data
-    ) {
-      reset({
-        id_race: race.id_race,
-        registration_accompaniments: {
-          data: [{ first_name: "", last_name: "", phone: "" }],
-        },
-        registration_upsells: { data: [] },
-        registration_competitors: {
-          data: [],
-        },
-      });
-    }
-  }, [dataUpsell?.data]);
+  const [category, setCategory] = useState<string>();
+  const [loadingCategories, setLoadingCategories] = useState(true);
   const [setupCategories, setSetupCategories] = useState<{
     doprovod: boolean;
     price: number;
   }>();
-  //const theme = useTheme();
-  // const isSmallOrLess = useMediaQuery(theme.breakpoints.down("sm"));
-  useEffect(() => {
-    const selectedCategory = data?.data?.find(
-      (value) => value.id === getValues().id_race_categories
-    );
-    setSetupCategories({
-      doprovod: selectedCategory?.accompaniment ?? false,
-      price: selectedCategory?.price ?? 0,
-    });
-    reset({
+  async function waitFce() {
+    const selectedCategory = data?.data?.find((value) => value.id === category);
+    await reset({
       ...getValues(),
       registration_upsells: {
         data: dataUpsell?.data.map((item, index) => {
           return {
             id_race_upsell: item.id as string | undefined,
-            amount: getValues().registration_upsells.data?.[index]?.amount as
-              | string
-              | undefined,
-            price: item.price.toString() as string | undefined,
+            amount:
+              (getValues()?.registration_upsells?.data?.[index]?.amount as
+                | string
+                | undefined) ?? "0",
+            price: item?.price?.toString() as string | undefined,
           };
         }),
       },
@@ -253,23 +218,36 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
         data: dataRules?.data.map((item, index) => {
           return {
             first_name:
-              getValues().registration_competitors.data?.[index]?.first_name ??
-              "",
+              getValues()?.registration_competitors?.data?.[index]
+                ?.first_name ?? "",
             last_name:
-              getValues().registration_competitors.data?.[index]?.last_name ??
+              getValues()?.registration_competitors?.data?.[index]?.last_name ??
               "",
             phone_number:
-              getValues().registration_competitors.data?.[index]
+              getValues()?.registration_competitors?.data?.[index]
                 ?.phone_number ?? "",
             email:
-              getValues().registration_competitors.data?.[index]?.email ?? "",
+              getValues()?.registration_competitors?.data?.[index]?.email ?? "",
           };
         }),
       },
     });
-  }, [getValues().id_race_categories, dataRules?.data]);
 
-  if (isLoading || isLoadingUpsell || isLoadingRules) return <>Loading ...</>;
+    setSetupCategories({
+      doprovod: selectedCategory?.accompaniment ?? false,
+      price: selectedCategory?.price ?? 0,
+    });
+  }
+
+  useEffect(() => {
+    if (loadingCategories) {
+      waitFce().then(() => {
+        setLoadingCategories(false);
+      });
+    }
+  }, [loadingCategories, dataRules?.data, dataUpsell?.data]);
+  if (isLoading || isLoadingUpsell || isLoadingRules || loadingCategories)
+    return <>Loading ...</>;
 
   const renderFormByStep = (step: number) => {
     switch (step) {
@@ -402,7 +380,10 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
                         }}
                         onClick={() => {
                           field.onChange(item.id);
+                          setCategory(item.id);
+                          setLoadingCategories(true);
                           clearErrors("id_race_categories");
+                          gotoStep(currentStep + 1);
                         }}
                       >
                         <Card
@@ -484,7 +465,7 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
 
         return (
           <>
-            {controlledFields?.map((item, index) => (
+            {dataRules?.data?.map((item, index) => (
               <Box
                 key={`registration_competitors${item.id}`}
                 sx={{
@@ -500,7 +481,6 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
                 <Box sx={{ display: "flex", rowGap: 1, columnGap: 1 }}>
                   <Controller
                     control={control}
-                    key={item.first_name}
                     name={`registration_competitors.data.${index}.first_name`}
                     rules={{ required: "Jméno nesmí být prázdné" }}
                     render={({ field }) => {
@@ -787,7 +767,7 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
                 marginBottom: 1,
               }}
             >
-              {dataUpsell?.data.map((item, index) => (
+              {dataUpsell?.data?.map((item, index) => (
                 <Grid
                   container
                   sx={{
@@ -923,7 +903,7 @@ export const RegistrationRight: FC<RegistrationProps> = ({ race }) => {
               Předchozí krok
             </Button>
           )}
-          {currentStep < stepTitles.length - 1 && (
+          {currentStep < stepTitles.length - 1 && currentStep > 0 && (
             <Button
               variant="contained"
               onClick={() => {

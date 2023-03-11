@@ -15,6 +15,7 @@ import Image from "next/image";
 import logo from "public/logo.png";
 import { useWindowSize } from "@components/hooks/windowsResize";
 import { useRouter } from "next/dist/client/router";
+import { cheddarGothic } from "./_app";
 export interface IHomePage {
   loading: boolean;
   id_file: string;
@@ -55,7 +56,7 @@ const HomepageRace: FC = () => {
   );
   const refRow = useRef(null);
   const [photoWidth, setPhotoWidth] = useState(400);
-  const [logoWidth, setLogoWidth] = useState(400 / 5);
+  const [logoWidth, setLogoWidth] = useState(400 / 2);
   const debounceFce = useCallback(
     debounce((refRow, windowsSize) => {
       if (refRow.current && refRow.current) {
@@ -65,28 +66,33 @@ const HomepageRace: FC = () => {
       }
       if (windowsSize.width < 700) {
         setCols(2);
-        setLogoWidth(Math.round(photoWidth / 3.5));
+        setLogoWidth(Math.round(photoWidth / 3));
       } else {
         setCols(1);
-        setLogoWidth(Math.round(photoWidth / 4.9));
+        setLogoWidth(Math.round(photoWidth / 3));
       }
       setLoading(false);
     }, 200),
     []
   );
   useEffect(() => {
+    setLoading(true);
     debounceFce(refRow, windowsSize);
   }, [refRow, windowsSize]);
-  useEffect(() => {
-    setLoading(true);
-    debounceFce(refRow, windowsSize);
-  }, [windowsSize]);
 
-  useEffect(() => {
-    setLoading(true);
-    debounceFce(refRow, windowsSize);
-  }, []);
+  // useEffect(() => {
+  //   setLoading(true);
+  //   debounceFce(refRow, windowsSize);
+  // }, [windowsSize]);
+  //
+  // useEffect(() => {
+  //   setLoading(true);
+  //   debounceFce(refRow, windowsSize);
+  // }, []);
   if (loading || isLoading) return <div>Loading ...</div>;
+
+  const rightTitle = dataRight?.title?.split(/\s/g);
+  const leftTitle = dataLeft?.title?.split(/\s/g);
   return (
     <Layout Footer={Footer}>
       <Box ref={refRow}>
@@ -96,9 +102,9 @@ const HomepageRace: FC = () => {
             width: "100%",
             height: "100%",
             transform: "translateZ(0)",
-            mb: 0.3,
+            mb: 1.5,
           }}
-          gap={3}
+          gap={10}
         >
           <Box
             sx={{
@@ -139,7 +145,7 @@ const HomepageRace: FC = () => {
                   width: "50%",
                   left: `calc(50% - ${cols === 2 ? 0 : 1}px)`,
                   background: "#1A4D2E",
-                  top: "20%",
+                  top: "30%",
                   color: "white",
                   fontSize: "14px",
                   padding: 10,
@@ -157,15 +163,14 @@ const HomepageRace: FC = () => {
                   width: "60%",
                   right: "30%",
                   bottom: "20%",
+                  color: "#FAF3E3",
+                  fontFamily: cheddarGothic.style.fontFamily,
                 }}
               >
-                <img
-                  src={nhost.storage.getPublicUrl({
-                    fileId: dataLeft.id_file_title,
-                    width: Math.round(photoWidth / 2.5),
-                  })}
-                  alt={dataLeft.title}
-                />
+                <Box fontSize={110}>{leftTitle?.[0]}</Box>
+                <Box fontSize={40} sx={{ marginTop: -4 }}>
+                  {leftTitle?.[1]}
+                </Box>
               </div>
             </ImageListItem>
           )}
@@ -210,15 +215,14 @@ const HomepageRace: FC = () => {
                   width: "60%",
                   left: "40%",
                   top: "20%",
+                  color: "#FAF3E3",
+                  fontFamily: cheddarGothic.style.fontFamily,
                 }}
               >
-                <img
-                  src={nhost.storage.getPublicUrl({
-                    fileId: dataRight?.id_file_title,
-                    width: Math.round(photoWidth / 2.5),
-                  })}
-                  alt={dataRight.title}
-                />
+                <Box fontSize={110}>{rightTitle?.[0]}</Box>
+                <Box fontSize={40} sx={{ marginTop: -4 }}>
+                  {rightTitle?.[1]}
+                </Box>
               </div>
             </ImageListItem>
           )}

@@ -13,7 +13,7 @@ export const PriceComponent: FC<CenaProps> = ({ cenaCategory, upsells }) => {
     (acc, val) => acc + parseInt(val.price) * parseInt(val.amount ?? 0),
     0
   );
-  console.log(upsells);
+
   const cenaFull = (sum || 0) + (cenaCategory || 0);
   useEffect(() => {
     formContext?.dispatch({

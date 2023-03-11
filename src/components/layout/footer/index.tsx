@@ -1,7 +1,6 @@
 import React from "react";
 import Image from "next/image";
 import { Box, Stack, Typography } from "@pankod/refine-mui";
-import { Divider } from "@mui/material";
 import { nudista } from "../../../../pages/_app";
 import whiteLogo from "public/logo-white.svg";
 export const Footer: React.FC = () => (
@@ -18,15 +17,7 @@ export const Footer: React.FC = () => (
         <Image width={88} src={whiteLogo} alt={"footer-logo"} />
       </Stack>
     </Box>
-    <Box style={{ width: "100%", alignSelf: "center" }}>
-      <Divider
-        sx={{
-          "&::before, &::after": {
-            borderColor: "white",
-          },
-        }}
-      />
-    </Box>
+    <Box style={{ width: "100%", alignSelf: "center" }}></Box>
     <Box
       style={{
         marginLeft: 10,

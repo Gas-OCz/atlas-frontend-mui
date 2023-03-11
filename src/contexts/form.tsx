@@ -51,7 +51,6 @@ const initialState: FormState = {
 };
 export const FormProvider: FC<FormProps> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  console.log(state);
   return (
     <FormContext.Provider value={{ state, dispatch }}>
       {children}
